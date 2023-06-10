@@ -1,13 +1,12 @@
 #!/bin/bash
 
-echo "Hello!"
-
 set -eufo pipefail
 
-# Removed unstable install of hombrew
 # Install Homebrew
-# NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+command -v brew >/dev/null 2>&1 || \
+    (echo '🍺  Installing Homebrew' && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
 
+echo '🍺 Installing Homebrew packages' && \
 brew bundle --no-lock --file=/dev/stdin <<EOF
 # Brews
 brew "asciinema"
