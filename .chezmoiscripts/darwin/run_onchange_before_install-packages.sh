@@ -34,14 +34,18 @@ brew "watch"
 # cask "1password" # Installed manually
 cask "appcleaner"
 # cask "arc" # Installed manually
+cask "calibre"
 cask "daisydisk"
 # cask "docker" # Installed manually
+cask "dozer"
 cask "drawio"
 cask "iterm2"
 # cask "logitech-g-hub" # Installed manually
+cask "logseq"
 cask "monitorcontrol"
 cask "obs"
-cask "parallels"
+# cask "parallels"
+cask "plug"
 cask "qflipper"
 cask "raindropio"
 cask "spotify"
