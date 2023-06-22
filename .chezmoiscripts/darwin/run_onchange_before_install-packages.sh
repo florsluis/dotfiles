@@ -36,14 +36,15 @@ cask "appcleaner"
 # cask "arc" # Installed manually
 cask "calibre"
 cask "daisydisk"
-# cask "docker" # Installed manually
-cask "dozer"
+cask "docker"
+# cask "dozer"
 cask "drawio"
 cask "iterm2"
 # cask "logitech-g-hub" # Installed manually
 cask "logseq"
 cask "monitorcontrol"
 cask "obs"
+# cask "podman-desktop"
 # cask "parallels"
 cask "plug"
 cask "qflipper"
