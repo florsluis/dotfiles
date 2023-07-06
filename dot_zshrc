@@ -15,5 +15,27 @@ source /opt/homebrew/opt/powerlevel10k/powerlevel10k.zsh-theme
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+list_prs() {
+	echo -e "\n🗓️ Ready for review 👀:" \
+		&& gh pr list -S 'draft:false sort:updated-desc is:open is:pr review:required'
+
+	echo -e "\n✅ Changes requested:" \
+		&& gh pr list -S 'draft:false sort:updated-desc is:open is:pr review:changes-requested'
+}
+
+review_pull_request() {
+	pr=$1
+	gh pr checkout $pr
+	gh pr view $pr --web
+}
+
+# Load .zshrc
+alias src="source ~/.zshrc"
+
 alias pres="open ~/Documents/PresentationLaptop.vncloc"
+alias cb="cd ~/codebase"
+alias cpr="cd ~/codebase/constellation; list_prs"
+alias prs="list_prs"
+alias review="review_pull_request"
+
 # alias docker=podman

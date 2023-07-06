@@ -3,11 +3,11 @@
 set -eufo pipefail
 
 # Install Homebrew
-command -v brew >/dev/null 2>&1 || \
+command -v brew >/dev/null 2>&1 ||
     (echo '🍺  Installing Homebrew' && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
 
-echo '🍺 Installing Homebrew packages' && \
-brew bundle --no-lock --file=/dev/stdin <<EOF
+echo '🍺 Installing Homebrew packages' &&
+    brew bundle --no-lock --file=/dev/stdin <<EOF
 # Brews
 brew "asciinema"
 brew "bash"
@@ -26,6 +26,7 @@ brew "neofetch"
 brew "nmap"
 brew "nvm"
 brew "vim"
+brew "shfmt"
 brew "speedtest-cli"
 brew "tree"
 brew "watch"
