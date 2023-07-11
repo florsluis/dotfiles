@@ -1,5 +1,3 @@
-#!/bin/zsh
-
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -19,16 +17,23 @@ source /opt/homebrew/opt/powerlevel10k/powerlevel10k.zsh-theme
 
 list_prs() {
 	echo -e "\n🗓️ Ready for review 👀:" \
-		&& gh pr list -S 'draft:false sort:updated-desc is:open is:pr review:required'
+		&& gh pr list -S 'draft:false sort:updated-desc is:open is:pr review:required' --json number,title,headRefName,author --template '{{range .}}{{tablerow (printf "#%v" .number | autocolor "green") .title (.headRefName | color "cyan") (.author.login | color "yellow") }}{{end}}'
 
 	echo -e "\n✅ Changes requested:" \
-		&& gh pr list -S 'draft:false sort:updated-desc is:open is:pr review:changes-requested'
+		&& gh pr list -S 'draft:false sort:updated-desc is:open is:pr review:changes-requested' --json number,title,headRefName,author --template '{{range .}}{{tablerow (printf "#%v" .number | autocolor "green") .title (.headRefName | color "cyan") (.author.login | color "yellow") }}{{end}}'
 }
 
 review_pull_request() {
 	pr=$1
 	gh pr checkout $pr
 	gh pr view $pr --web
+}
+
+headstorm() {
+	open -a Arc 
+	open -a "Microsoft Outlook"
+	open -a Logseq
+	open -a Slack
 }
 
 # Load .zshrc
