@@ -33,7 +33,7 @@ brew "minikube"
 brew "neofetch"
 brew "nmap"
 brew "nvm"
-brew "romkatv/powerlevel10k/powerlevel10k"
+# brew "romkatv/powerlevel10k/powerlevel10k"
 brew "vim"
 # brew "shfmt"
 brew "speedtest-cli"
@@ -52,7 +52,7 @@ cask "docker"
 cask "drawio"
 cask "iterm2"
 cask "kap"
-cask "logitech-g-hub" # Installed manually
+# cask "logitech-g-hub" # Installed manually
 cask "logseq"
 # cask "monitorcontrol"
 cask "obs"
@@ -67,3 +67,8 @@ cask "typora"
 cask "visual-studio-code"
 cask "warp"
 EOF
+
+# Exit without error even if some homebrew packages don't install with brew bundle
+trap 'exit 0' ERR
+
+echo '🎉 All done!'
