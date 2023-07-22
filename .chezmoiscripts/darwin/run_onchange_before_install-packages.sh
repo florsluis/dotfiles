@@ -12,7 +12,6 @@ if ! command -v brew >/dev/null 2>&1; then
     export PATH="/opt/homebrew/bin:$PATH"
 fi
 
-
 echo '🍺 Installing Homebrew packages' &&
     brew bundle --no-lock --file=/dev/stdin <<EOF
 # Brews
@@ -34,7 +33,7 @@ brew "minikube"
 brew "neofetch"
 brew "nmap"
 brew "nvm"
-brew "powerlevel10k"
+brew "romkatv/powerlevel10k/powerlevel10k"
 brew "vim"
 # brew "shfmt"
 brew "speedtest-cli"
