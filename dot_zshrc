@@ -5,6 +5,13 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Chezmoi Configuration
+export CHEZMOI_DIR="$HOME/.local/share/chezmoi"
+alias _chezmoi="code $CHEZMOI_DIR"
+
+# CURL Configuration
+export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+
 # NVM Configuration
 export NVM_DIR="$HOME/.nvm"
  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
@@ -37,7 +44,7 @@ headstorm() {
 }
 
 # Load .zshrc
-alias src="source ~/.zshrc"
+alias _src="source ~/.zshrc"
 
 alias pres="open ~/Documents/PresentationLaptop.vncloc"
 alias cb="cd ~/codebase"
@@ -46,3 +53,5 @@ alias prs="list_prs"
 alias review="review_pull_request"
 
 # alias docker=podman
+alias slack="open -a Slack"
+

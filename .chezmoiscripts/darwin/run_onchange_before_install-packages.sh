@@ -2,9 +2,15 @@
 
 set -eufo pipefail
 
+# Install Xcode Command Line Tools
+xcode-select —-install
+
 # Install Homebrew
-command -v brew >/dev/null 2>&1 ||
-    (echo '🍺  Installing Homebrew' && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
+if ! command -v brew >/dev/null 2>&1; then
+    echo '🍺  Installing Homebrew' && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    export PATH="/opt/homebrew/bin:$PATH"
+fi
+
 
 echo '🍺 Installing Homebrew packages' &&
     brew bundle --no-lock --file=/dev/stdin <<EOF
@@ -13,11 +19,13 @@ brew "asciinema"
 brew "bash"
 brew "bash-completion@2"
 brew "chezmoi"
+brew "curl"
 brew "gh"
 brew "git"
 brew "htop"
 brew "ipcalc"
 brew "iperf3"
+brew "iproute2mac"
 brew "jenv"
 brew "jq"
 brew "mas"
@@ -25,6 +33,7 @@ brew "minikube"
 brew "neofetch"
 brew "nmap"
 brew "nvm"
+brew "powerlevel10k"
 brew "vim"
 # brew "shfmt"
 brew "speedtest-cli"
@@ -35,15 +44,17 @@ brew "watch"
 # cask "1password" # Installed manually
 cask "appcleaner"
 # cask "arc" # Installed manually
+cask "betterdisplay"
 cask "calibre"
 cask "daisydisk"
 cask "docker"
 # cask "dozer"
 cask "drawio"
 cask "iterm2"
-# cask "logitech-g-hub" # Installed manually
+cask "kap"
+cask "logitech-g-hub" # Installed manually
 cask "logseq"
-cask "monitorcontrol"
+# cask "monitorcontrol"
 cask "obs"
 # cask "podman-desktop"
 # cask "parallels"
@@ -52,6 +63,7 @@ cask "qflipper"
 cask "raindropio"
 cask "spotify"
 cask "sublime-text"
+cask "typora"
 cask "visual-studio-code"
 cask "warp"
 EOF
