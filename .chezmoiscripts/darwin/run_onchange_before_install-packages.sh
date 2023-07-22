@@ -2,8 +2,9 @@
 
 set -eufo pipefail
 
-# Install Xcode Command Line Tools
-xcode-select —-install
+if ! command -v xcodebuild -version >/dev/null 2>&1; then
+    echo '🍎 Installing Xcode Command Line Tools' && xcode-select --install
+fi
 
 # Install Homebrew
 if ! command -v brew >/dev/null 2>&1; then
