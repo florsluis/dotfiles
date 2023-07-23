@@ -39,6 +39,20 @@ review_pull_request() {
 	gh pr view $pr --web
 }
 
+# Aliases
+alias _src="source ~/.zshrc"
+alias pres="open ~/Documents/PresentationLaptop.vncloc"
+alias cb="cd ~/codebase"
+alias cpr="cd ~/codebase/constellation; list_prs"
+alias prs="list_prs"
+alias review="review_pull_request"
+
+# Applications
+alias slack="open -a Slack"
+alias logseq="open -a Logseq"
+alias arc="open -a Arc"
+alias outlook="open -a 'Microsoft Outlook'"
+
 headstorm() {
 	open -a Arc 
 	open -a "Microsoft Outlook"
@@ -46,15 +60,6 @@ headstorm() {
 	open -a Slack
 }
 
-# Load .zshrc
-alias _src="source ~/.zshrc"
-
-alias pres="open ~/Documents/PresentationLaptop.vncloc"
-alias cb="cd ~/codebase"
-alias cpr="cd ~/codebase/constellation; list_prs"
-alias prs="list_prs"
-alias review="review_pull_request"
-
-# alias docker=podman
-alias slack="open -a Slack"
-
+production() {
+	pres
+}
