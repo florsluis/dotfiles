@@ -1,4 +1,43 @@
+{{- /* Profile choices */ -}}
+{{- $profileChoices := list "work" "personal" "server" "light" -}}
+
+{{- /* Work features */ -}}
+{{- $workChoices := list "devTools" "docker" "spotify" "mediaTools" "monitoring" "productivity" "workSpecific" "utilities" -}}
+{{- $workDefaults := list "devTools" "docker" "spotify" "productivity" -}}
+
+{{- /* Personal features */ -}}
+{{- $personalChoices := list "devTools" "docker" "spotify" "mediaTools" "productivity" "personalTools" "utilities" -}}
+{{- $personalDefaults := list "devTools" "docker" "spotify" "productivity" "personalTools" -}}
+
+{{- /* Server features */ -}}
+{{- $serverChoices := list "docker" "monitoring" -}}
+{{- $serverDefaults := list "monitoring" -}}
+
+{{- /* Prompt for profile */ -}}
+{{- $profile := promptChoice "Select profile" $profileChoices -}}
+
+{{- /* Prompt for email, name, and hostname */ -}}
 {{- $email := promptStringOnce . "email" "Enter your email address" -}}
+{{- $gitName := promptStringOnce . "gitName" "Enter your name for git commits" -}}
+{{- $hostname := output "hostname" | trim -}}
+
+{{- /* Prompt for projects directory */ -}}
+{{- $projectsDir := promptStringOnce . "projectsDir" "Enter your projects directory (e.g., ~/projects, ~/codebase)" -}}
+
+{{- /* Prompt for features based on selected profile */ -}}
+{{- $features := list -}}
+{{- if eq .profile "work" -}}
+{{- $features = promptMultichoice "Select features" $workChoices $workDefaults -}}
+{{- else if eq .profile "personal" -}}
+{{- $features = promptMultichoice "Select features" $personalChoices $personalDefaults -}}
+{{- else if eq .profile "server" -}}
+{{- $features = promptMultichoice "Select features" $serverChoices $serverDefaults -}}
+{{- end -}}
 
 [data]
+    profile = {{ $profile | quote }}
     email = {{ $email | quote }}
+    gitName = {{ $gitName | quote }}
+    hostname = {{ $hostname | quote }}
+    projectsDir = {{ $projectsDir | quote }}
+    features = {{ $features | toToml }}

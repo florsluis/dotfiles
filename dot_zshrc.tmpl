@@ -1,0 +1,160 @@
+# Universal Configuration (all profiles)
+export PATH="/opt/homebrew/bin:$PATH"
+
+# Load local secrets and environment variables (not tracked by chezmoi)
+[ -f ~/.env.local ] && source ~/.env.local
+
+# Chezmoi Configuration
+export CHEZMOI_DIR="$HOME/.local/share/chezmoi"
+alias _chezmoi="code $CHEZMOI_DIR"
+alias _src="source ~/.zshrc"
+
+# GPG Configuration
+export GPG_TTY=$(tty)
+
+# Local bin path
+export PATH="$HOME/.local/bin:$PATH"
+
+# Custom keybindings
+bindkey "^[[1;3D" backward-word   # Option + ←
+bindkey "^[[1;3C" forward-word    # Option + →
+
+{{- if or (eq .profile "work") (eq .profile "personal") }}
+
+# GUI System Configuration (work and personal profiles)
+
+# Enable Powerlevel10k instant prompt
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# Powerlevel10k theme
+[ -f /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme ] && source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+{{- if has "devTools" .features }}
+
+# Dev Tools Configuration
+export PATH="/opt/homebrew/opt/curl/bin:$PATH"
+
+# NVM (Node version manager)
+export NVM_DIR="$HOME/.nvm"
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+# Pyenv (Python version manager)
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+command -v pyenv >/dev/null 2>&1 && eval "$(pyenv init -)"
+
+# Java and Android configuration
+[ -d /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home ] && \
+  export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+
+[ -d $HOME/Library/Android/sdk ] && \
+  export ANDROID_HOME=$HOME/Library/Android/sdk && \
+  export PATH=$PATH:$ANDROID_HOME/emulator && \
+  export PATH=$PATH:$ANDROID_HOME/platform-tools
+
+# Azure CLI completion
+autoload bashcompinit && bashcompinit
+[ -f /opt/homebrew/etc/bash_completion.d/az ] && source /opt/homebrew/etc/bash_completion.d/az
+
+# jenv (Java version manager)
+command -v jenv >/dev/null 2>&1 && eval "$(jenv init -)"
+
+{{- end }}
+
+{{- if or (eq .profile "work") (eq .profile "personal") }}
+
+# Conda initialization (GUI systems only)
+__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)" || __conda_setup="$('/opt/miniconda/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/miniconda3/etc/profile.d/conda.sh"
+    elif [ -f "/opt/miniconda/etc/profile.d/conda.sh" ]; then
+        . "/opt/miniconda/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/miniconda3/bin:/opt/miniconda/bin:$PATH"
+    fi
+fi
+
+{{- end }}
+
+{{- end }}
+
+{{- if eq .profile "work" }}
+
+# ===== WORK PROFILE =====
+
+{{- if has "devTools" .features }}
+
+# Work Development Environment
+alias cb="cd {{ .projectsDir }}"
+alias cpr="cd {{ .projectsDir }}/constellation; list_prs"
+
+# GitHub PR Management Functions
+list_prs() {
+	echo -e "\n🗓️ Ready for review 👀:" \
+		&& gh pr list -S 'draft:false sort:updated-desc is:open is:pr review:required' --json number,title,headRefName,author --template '{{"{{range .}}{{tablerow (printf \"#%v\" .number | autocolor \"green\") .title (.headRefName | color \"cyan\") (.author.login | color \"yellow\") }}{{end}}"}}'
+
+	echo -e "\n✅ Changes requested:" \
+		&& gh pr list -S 'draft:false sort:updated-desc is:open is:pr review:changes-requested' --json number,title,headRefName,author --template '{{"{{range .}}{{tablerow (printf \"#%v\" .number | autocolor \"green\") .title (.headRefName | color \"cyan\") (.author.login | color \"yellow\") }}{{end}}"}}'
+}
+
+review_pull_request() {
+	pr=$1
+	gh pr checkout $pr
+	gh pr view $pr --web
+}
+
+alias prs="list_prs"
+alias review="review_pull_request"
+
+{{- end }}
+
+{{- if has "productivity" .features }}
+
+# Productivity Tools (Slack, Outlook, Logseq, Arc)
+alias slack="open -a Slack"
+alias logseq="open -a Logseq"
+alias arc="open -a Arc"
+alias outlook="open -a 'Microsoft Outlook'"
+alias teams="open -a 'Microsoft Teams'"
+
+headstorm() {
+	open -a Arc
+	open -a "Microsoft Outlook"
+	open -a Logseq
+	open -a Slack
+}
+
+{{- end }}
+
+{{- else if eq .profile "personal" }}
+
+# ===== PERSONAL PROFILE =====
+
+{{- if has "devTools" .features }}
+
+# Personal Development Environment
+
+{{- end }}
+
+{{- else if eq .profile "server" }}
+
+# ===== SERVER PROFILE =====
+
+# Minimal configuration for server environments
+export LANG=en_US.UTF-8
+
+{{- else if eq .profile "light" }}
+
+# ===== LIGHT PROFILE =====
+
+# Minimal setup for one-off or temporary use
+# Only universal tools are installed
+
+{{- end }}

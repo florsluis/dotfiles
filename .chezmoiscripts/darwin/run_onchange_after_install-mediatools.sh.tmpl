@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{- if has "mediaTools" .features }}
+
+echo '🎬 Installing media tools'
+brew bundle --file=/dev/stdin <<EOF
+cask "obs"
+cask "kap"
+EOF
+
+trap 'exit 0' ERR
+echo '✅ Media tools installed!'
+{{- else }}
+exit 0
+{{- end }}

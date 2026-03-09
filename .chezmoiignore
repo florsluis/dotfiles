@@ -1,1 +1,6 @@
 assets/
+.env.local
+.env
+.secrets*
+.env.*.local
+.claude/

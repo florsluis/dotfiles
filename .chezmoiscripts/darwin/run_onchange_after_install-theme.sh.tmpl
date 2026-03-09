@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{- if or (eq .profile "work") (eq .profile "personal") }}
+
+echo '🎨 Installing shell theme and system info tools'
+brew bundle --file=/dev/stdin <<EOF
+# Shell Theme
+brew "powerlevel10k"
+
+# System info (GUI systems only)
+brew "fastfetch"
+EOF
+
+trap 'exit 0' ERR
+echo '✅ Theme installed!'
+{{- else }}
+exit 0
+{{- end }}

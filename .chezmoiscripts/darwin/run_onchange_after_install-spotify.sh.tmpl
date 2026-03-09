@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{- if has "spotify" .features }}
+
+echo '🎵 Installing Spotify'
+brew bundle --file=/dev/stdin <<EOF
+cask "spotify"
+EOF
+
+trap 'exit 0' ERR
+echo '✅ Spotify installed!'
+{{- else }}
+exit 0
+{{- end }}

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{- if has "devTools" .features }}
+
+echo '🛠️ Installing development tools'
+brew bundle --file=/dev/stdin <<EOF
+# Version Managers
+brew "nvm"
+brew "jenv"
+
+# Kubernetes
+brew "minikube"
+
+# Terminal Emulators
+cask "iterm2"
+cask "warp"
+
+# Code Editors
+cask "visual-studio-code"
+cask "sublime-text"
+
+# Recording/Demo tools
+brew "asciinema"
+EOF
+
+trap 'exit 0' ERR
+echo '✅ Development tools installed!'
+{{- else }}
+exit 0
+{{- end }}
