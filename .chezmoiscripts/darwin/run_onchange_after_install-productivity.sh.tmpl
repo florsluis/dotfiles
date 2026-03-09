@@ -1,0 +1,19 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{- if has "productivity" .features }}
+
+echo '📝 Installing productivity tools'
+brew bundle --file=/dev/stdin <<EOF
+cask "logseq"
+cask "typora"
+cask "drawio"
+cask "raindropio"
+EOF
+
+trap 'exit 0' ERR
+echo '✅ Productivity tools installed!'
+{{- else }}
+exit 0
+{{- end }}

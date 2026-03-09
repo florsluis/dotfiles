@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{- if has "utilities" .features }}
+
+echo '🛠️ Installing system utilities'
+brew bundle --file=/dev/stdin <<EOF
+# Mac App Store CLI (GUI systems)
+brew "mas"
+
+# System utilities
+cask "appcleaner"
+cask "betterdisplay"
+cask "daisydisk"
+EOF
+
+trap 'exit 0' ERR
+echo '✅ System utilities installed!'
+{{- else }}
+exit 0
+{{- end }}

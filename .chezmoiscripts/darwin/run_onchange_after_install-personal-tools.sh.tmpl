@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{- if and (eq .profile "personal") (has "personalTools" .features) }}
+
+echo '📚 Installing personal tools'
+brew bundle --file=/dev/stdin <<EOF
+cask "calibre"
+EOF
+
+trap 'exit 0' ERR
+echo '✅ Personal tools installed!'
+{{- else }}
+exit 0
+{{- end }}
