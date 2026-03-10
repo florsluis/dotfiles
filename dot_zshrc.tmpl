@@ -9,6 +9,12 @@ export CHEZMOI_DIR="$HOME/.local/share/chezmoi"
 alias _chezmoi="code $CHEZMOI_DIR"
 alias _src="source ~/.zshrc"
 
+# Shortcut aliases
+alias g="git"
+alias k="kubectl"
+alias dc="docker compose"
+alias pivot="cd {{ .projectsDir }}/\$(ls {{ .projectsDir }} | fzf)"
+
 # GPG Configuration
 export GPG_TTY=$(tty)
 
@@ -62,6 +68,9 @@ autoload bashcompinit && bashcompinit
 
 # jenv (Java version manager)
 command -v jenv >/dev/null 2>&1 && eval "$(jenv init -)"
+
+# mise (runtime version manager) - reads mise.toml per repo
+command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 
 {{- end }}
 

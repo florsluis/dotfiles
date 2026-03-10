@@ -132,6 +132,11 @@ Main zsh configuration (template). Uses profiles and toggles:
 **Always included**:
 - Homebrew PATH
 - Chezmoi aliases (`_chezmoi`, `_src`)
+- **Shortcut aliases** (universal):
+  - `g` → `git`
+  - `k` → `kubectl`
+  - `dc` → `docker compose`
+  - `pivot` → fuzzy-search projects via fzf, `cd` to selection
 
 **GUI profiles (work/personal)** - conditional on `{{ if or (eq .profile "work") (eq .profile "personal") }}`:
 - Powerlevel10k theme + instant prompt
@@ -140,6 +145,7 @@ Main zsh configuration (template). Uses profiles and toggles:
 **Dev tools enabled** - conditional on `{{ if .devTools }}`:
 - NVM (Node version manager)
 - CURL PATH configuration
+- **mise activation** — runtime version manager (`eval "$(mise activate zsh)"`)
 - For work: GitHub PR functions, codebase aliases
 - For personal: Project aliases
 
@@ -164,6 +170,8 @@ Two-stage installation process:
 - Installs Xcode Command Line Tools (if needed)
 - Installs Homebrew (if needed)
 - Installs universal packages: bash, git, chezmoi, gh, curl, vim, tree, watch, htop, jq
+- `fzf` — fuzzy finder for project switching
+- `just` — task runner for per-repo workflows
 
 **2. Profile + Toggle-Based Installs** (all after universal)
 
@@ -171,7 +179,7 @@ Each script checks its toggle flag before installing:
 
 | Script | Installs | Condition |
 |--------|----------|-----------|
-| **devtools** | VS Code, iTerm2, Warp, NVM, Jenv, Minikube, Asciinema | `{{ .devTools }}` |
+| **devtools** | VS Code, iTerm2, Warp, NVM, Jenv, Mise, Minikube, Asciinema | `{{ .devTools }}` |
 | **docker** | Docker Desktop | `{{ .docker }}` |
 | **theme** | Powerlevel10k, fastfetch | GUI profiles (work/personal) |
 | **spotify** | Spotify | `{{ .spotify }}` |
@@ -309,8 +317,84 @@ Powerlevel10k needs fonts to display correctly (GUI systems only):
 - Fonts in `assets/fonts/` must be installed on the system
 - Automatic on first setup if using GUI profile
 
+## Client Pivot Workflow
+
+Seamlessly switch between client projects without environment conflicts.
+
+### Tools
+
+- **mise** — Runtime version manager (node, python, ruby, go, java, rust, etc.)
+  - Per-repo configuration via `mise.toml`
+  - Auto-activates runtimes when entering a project directory
+  - Coexists with nvm/pyenv/jenv (no removal required)
+
+- **just** — Task runner for per-repo workflows
+  - Define dev, test, build, deploy commands in project's `justfile`
+  - Execute with `just <recipe>` from any repo directory
+
+- **fzf** — Fuzzy finder for quick project selection
+  - `pivot` alias opens interactive project browser
+  - Fuzzy-search over `{{ .projectsDir }}` directories
+
+### Usage
+
+```bash
+# Switch to a project
+pivot
+# → Opens fzf, select project, cd there
+
+# Inside a project with mise.toml
+mise install              # Install runtimes
+node --version            # Uses project-pinned version
+
+# Inside a project with justfile
+just                      # List recipes
+just dev                  # Start dev environment
+just test                 # Run tests
+just build                # Build project
+```
+
+### Implementation Details
+
+**Shell Aliases** (in `dot_zshrc.tmpl`):
+- `g` → `git`
+- `k` → `kubectl`
+- `dc` → `docker compose`
+- `pivot` → `cd {{ .projectsDir }}/$(ls {{ .projectsDir }} | fzf)`
+
+**Mise Activation** (in `dot_zshrc.tmpl`, devTools block):
+- `eval "$(mise activate zsh)"` — enables per-directory runtime switching
+- Reads `mise.toml` in project root, loads specified versions
+- Unsets when leaving directory
+
+**Project Structure Example**:
+```
+~/codebase/client-a/
+├── mise.toml          # node = "20", python = "3.12"
+├── justfile           # recipes: dev, test, build, deploy
+└── ...source files
+```
+
+### Migration from nvm/pyenv
+
+Existing projects continue to work with nvm/pyenv. To migrate a project to mise:
+
+```bash
+cd ~/codebase/client-a
+mise use node@20              # Read from .nvmrc or prompt
+mise use python@3.12
+mise install
+rm .nvmrc .python-version     # Optional cleanup
+```
+
+Mise shims take precedence over nvm/pyenv when active, so old and new projects coexist.
+
+### Future Enhancement: 1Password Integration
+
+Credentials (API keys, database passwords, tokens) will be stored in 1Password vault, not in `.env` files. Chezmoi templates will pull credentials during setup or runtime, eliminating plaintext secrets in git or local files.
+
 ## Git Workflow
 This repository follows standard git practices:
 - Each commit should represent a logical change
-- Recent commits focus on: aliases/functions, brew export paths, xcode setup, and PR management features
+- Recent commits focus on: aliases/functions, brew export paths, xcode setup, PR management, and client pivot workflow
 - Changes are applied to the local system via `chezmoi apply`

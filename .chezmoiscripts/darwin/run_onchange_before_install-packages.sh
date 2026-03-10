@@ -26,6 +26,8 @@ brew "jq"
 brew "vim"
 brew "tree"
 brew "watch"
+brew "fzf"
+brew "just"
 EOF
 
 # Exit without error even if some homebrew packages don't install with brew bundle
