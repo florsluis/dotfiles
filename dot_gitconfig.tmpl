@@ -1,3 +1,12 @@
 [user]
-	email = {{ .email }}
 	name = {{ .gitName }}
+	email = {{ .email }}
+
+# Per-client Git identities
+# To add a client identity:
+#   1. cp assets/gitconfig-client.template ~/.gitconfig-{client-name}
+#   2. Edit with client email/name
+#   3. Add includeIf block below for each client directory:
+#
+# [includeIf "gitdir:~/code/{client-name}/"]
+#     path = ~/.gitconfig-{client-name}

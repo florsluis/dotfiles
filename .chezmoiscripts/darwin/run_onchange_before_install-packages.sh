@@ -28,6 +28,7 @@ brew "tree"
 brew "watch"
 brew "fzf"
 brew "just"
+brew "mas"
 EOF
 
 # Exit without error even if some homebrew packages don't install with brew bundle

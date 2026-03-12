@@ -6,11 +6,9 @@ set -eufo pipefail
 
 echo '💼 Installing work-specific tools'
 brew bundle --file=/dev/stdin <<EOF
-# Taps
-tap "atlassian/homebrew-acli"
-
 # Work-specific tools
-brew "acli"
+tap "atlassian/homebrew-acli"
+brew "atlassian/homebrew-acli/acli"
 brew "jira-cli"
 cask "qflipper"
 EOF

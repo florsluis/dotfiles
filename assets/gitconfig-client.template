@@ -1,0 +1,15 @@
+# Git identity override for a specific client
+#
+# Usage:
+#   1. Copy this file: cp assets/gitconfig-client.template ~/.gitconfig-{client-name}
+#   2. Edit ~/.gitconfig-{client-name} with your client identity
+#   3. Add to ~/.gitconfig:
+#
+#      [includeIf "gitdir:~/code/{client-name}/"]
+#          path = ~/.gitconfig-{client-name}
+#
+# Then all repos in ~/code/{client-name}/ will use this identity.
+
+[user]
+	name = Your Name
+	email = your.email@client.com
