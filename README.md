@@ -2,6 +2,45 @@
 
 macOS system configuration & development environment manager using [chezmoi](https://www.chezmoi.io).
 
+## TL;DR: What Problem Does This Solve?
+
+**The Problem:** Setting up a new macOS machine takes hours—manually installing 100+ tools, configuring shell settings, managing API keys, and syncing configurations. Every reinstall means repeating this tedious process. Mistakes introduce inconsistencies across machines.
+
+**The Solution:** Infrastructure-as-code for your personal machine. Version-control your entire macOS setup (dotfiles, tool configs, installed apps) in a Git repository. Run one command—`chezmoi init`—and get a fully configured development environment in as little as 30 minutes instead of hours.
+
+**The Benefit:**
+- **For individuals:** New machine? Full setup in as little as 20 minutes instead of 4+ hours. No forgotten tools or configs.
+- **Consulting/Contracting: Multiple projects or clients:** Jump between client projects with different tool requirements without environment conflicts.
+
+## How It Works
+
+**Three-layer installation system:**
+
+1. **Universal packages** (git, vim, curl, chezmoi) — installed on every profile
+2. **Profile-based tools** (work/personal/server/light) — choose once at init, installs profile-specific packages
+3. **Optional features** (Docker, Xcode, Spotify, media tools) — toggle individually per profile
+
+**Supports all installation methods:**
+- **Homebrew formulas** (CLI tools): `brew "speedtest"`, `brew "nmap"`
+- **Homebrew Casks** (GUI apps): `cask "docker"`, `cask "spotify"`
+- **Mac App Store apps** via `mas` CLI: `mas "Xcode", id: 497799835`
+
+**Batch installation by feature:** Instead of installing tools one-by-one, toggle a feature like "iOS Developer" to install an entire stack at once:
+
+```bash
+# Toggle "iosDeveloper: true" in your config, then chezmoi apply runs:
+brew bundle --file=/dev/stdin <<EOF
+tap "homebrew/cask"
+brew "libimobiledevice"              # CLI tool (formula)
+cask "spotify"                       # GUI app (cask)
+mas "Xcode", id: 497799835           # App Store app
+mas "TestFlight", id: 899247664
+mas "Developer", id: 640199958
+EOF
+```
+
+One toggle installs everything needed for iOS development—no manual clicking, no forgetting a tool. Use the same approach for other stacks: "React Native", "Docker", "Monitoring", etc.
+
 ## Quick Start
 
 ### One-liner (fresh macOS)
