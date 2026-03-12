@@ -2,12 +2,12 @@
 {{- $profileChoices := list "work" "personal" "server" "light" -}}
 
 {{- /* Work features */ -}}
-{{- $workChoices := list "devTools" "docker" "spotify" "mediaTools" "monitoring" "productivity" "workSpecific" "utilities" -}}
-{{- $workDefaults := list "devTools" "docker" "spotify" "productivity" -}}
+{{- $workChoices := list "devTools" "docker" "spotify" "mediaTools" "monitoring" "productivity" "workSpecific" "utilities" "desktopApps" "iosDeveloper" "windowsRemoteDesktop" -}}
+{{- $workDefaults := list "devTools" "docker" "spotify" "productivity" "desktopApps" -}}
 
 {{- /* Personal features */ -}}
-{{- $personalChoices := list "devTools" "docker" "spotify" "mediaTools" "productivity" "personalTools" "utilities" -}}
-{{- $personalDefaults := list "devTools" "docker" "spotify" "productivity" "personalTools" -}}
+{{- $personalChoices := list "devTools" "docker" "spotify" "mediaTools" "productivity" "personalTools" "utilities" "desktopApps" "iosDeveloper" "windowsRemoteDesktop" -}}
+{{- $personalDefaults := list "devTools" "docker" "spotify" "productivity" "personalTools" "desktopApps" -}}
 
 {{- /* Server features */ -}}
 {{- $serverChoices := list "docker" "monitoring" -}}
@@ -24,14 +24,20 @@
 {{- /* Prompt for projects directory */ -}}
 {{- $projectsDir := promptStringOnce . "projectsDir" "Enter your projects directory (e.g., ~/projects, ~/codebase)" -}}
 
-{{- /* Prompt for features based on selected profile */ -}}
+{{- /* Feature guide for selected profile */ -}}
 {{- $features := list -}}
 {{- if eq .profile "work" -}}
+{{- writeToStdout "\n📋 FEATURE GUIDE (Work Profile):\n  devTools ................... VS Code, iTerm2, Warp, NVM, Jenv, Mise, Minikube\n  docker ..................... Docker Desktop\n  desktopApps ................ Amphetamine, Magnet, WireGuard\n  iosDeveloper ............... XCode, TestFlight, Developer tools\n  windowsRemoteDesktop ....... Windows App (remote desktop)\n  mediaTools ................. OBS, Kap\n  monitoring ................. Network tools (Speedtest, Nmap, Iperf3)\n  utilities .................. Appcleaner, BetterDisplay, Daisydisk\n  productivity ............... Logseq, Typora, Drawio, Raindrop\n  workSpecific ............... Acli, Jira CLI, Qflipper\n  spotify .................... Spotify\n\n" -}}
 {{- $features = promptMultichoice "Select features" $workChoices $workDefaults -}}
 {{- else if eq .profile "personal" -}}
+{{- writeToStdout "\n📋 FEATURE GUIDE (Personal Profile):\n  devTools ................... VS Code, iTerm2, Warp, NVM, Jenv, Mise, Minikube\n  docker ..................... Docker Desktop\n  desktopApps ................ Amphetamine, Magnet, WireGuard\n  iosDeveloper ............... XCode, TestFlight, Developer tools\n  windowsRemoteDesktop ....... Windows App (remote desktop)\n  mediaTools ................. OBS, Kap\n  utilities .................. Appcleaner, BetterDisplay, Daisydisk\n  productivity ............... Logseq, Typora, Drawio, Raindrop\n  personalTools .............. Calibre\n  spotify .................... Spotify\n\n" -}}
 {{- $features = promptMultichoice "Select features" $personalChoices $personalDefaults -}}
 {{- else if eq .profile "server" -}}
+{{- writeToStdout "\n📋 FEATURE GUIDE (Server Profile):\n  docker ..................... Docker Desktop\n  monitoring ................ Network tools (Speedtest, Nmap, Iperf3)\n\n" -}}
 {{- $features = promptMultichoice "Select features" $serverChoices $serverDefaults -}}
+{{- else if eq .profile "light" -}}
+{{- writeToStdout "\n📋 FEATURE GUIDE (Light Profile):\n  (No optional features)\n\n" -}}
+{{- $features = promptMultichoice "Select features" (list) (list) -}}
 {{- end -}}
 
 [data]

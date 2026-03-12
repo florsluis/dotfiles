@@ -6,13 +6,13 @@ set -eufo pipefail
 
 echo '📊 Installing monitoring and network tools'
 brew bundle --file=/dev/stdin <<EOF
-brew "speedtest-cli"
+tap "teamookla/speedtest"
+brew "teamookla/speedtest/speedtest"
 brew "nmap"
 brew "iperf3"
 brew "ipcalc"
 EOF
 
-trap 'exit 0' ERR
 echo '✅ Monitoring tools installed!'
 {{- else }}
 exit 0

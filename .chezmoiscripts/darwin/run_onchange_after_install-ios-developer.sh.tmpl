@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -eufo pipefail
+
+{{- if has "iosDeveloper" .features }}
+
+echo '📱 Installing iOS/macOS developer tools'
+brew bundle --file=/dev/stdin <<EOF
+# Developer Tools
+mas "Xcode", id: 497799835
+mas "TestFlight", id: 899247664
+mas "Developer", id: 640199958
+EOF
+
+echo '✅ iOS/macOS developer tools installed!'
+{{- else }}
+exit 0
+{{- end }}

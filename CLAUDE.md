@@ -62,6 +62,7 @@ This is a **chezmoi dotfiles repository** that manages macOS system configuratio
 │   ├── run_onchange_after_install-devtools.sh       # Dev tools (toggle)
 │   ├── run_onchange_after_install-docker.sh         # Docker (toggle)
 │   ├── run_onchange_after_install-theme.sh          # Powerlevel10k + fastfetch (GUI only)
+│   ├── run_onchange_after_install-desktop-apps.sh   # Amphetamine, Magnet, WireGuard (toggle)
 │   ├── run_onchange_after_install-spotify.sh        # Spotify (toggle)
 │   ├── run_onchange_after_install-productivity.sh   # Productivity apps (toggle)
 │   ├── run_onchange_after_install-mediatools.sh     # OBS, Kap (toggle)
@@ -69,6 +70,8 @@ This is a **chezmoi dotfiles repository** that manages macOS system configuratio
 │   ├── run_onchange_after_install-work-specific.sh  # Work tools (toggle)
 │   ├── run_onchange_after_install-utilities.sh      # System utils (toggle)
 │   ├── run_onchange_after_install-personal-tools.sh # Personal tools (toggle)
+│   ├── run_onchange_after_install-ios-developer.sh  # XCode, TestFlight, Developer (toggle)
+│   ├── run_onchange_after_install-windows-app.sh    # Windows App (toggle)
 │   └── run_onchange_after_configure.sh              # Post-setup cleanup
 ├── .chezmoiignore                           # Files to ignore
 ├── scripts/helpers.sh                       # Shell helpers (mostly unused)
@@ -83,9 +86,9 @@ This repository uses **profiles + feature toggles** to support different machine
 
 | Profile | Use Case | Theme | GUI Apps | Toggles |
 |---------|----------|-------|----------|---------|
-| **work** | Multiple projects, full dev environment | ✅ Powerlevel10k + fastfetch | ✅ IDE, editors, media tools | Docker, dev tools, monitoring, media, work-specific, utilities, productivity, spotify |
-| **personal** | Personal projects and hobby coding on separate machine | ✅ Powerlevel10k + fastfetch | ✅ Similar to work but without work-specific tools | Docker, dev tools, media, utilities, productivity, spotify, personal tools |
-| **server** | SSH access, remote machines, minimal setup | ❌ No theme | ❌ No GUI apps | Docker (default off), monitoring |
+| **work** | Multiple projects, full dev environment | ✅ Powerlevel10k + fastfetch | ✅ IDE, editors, media tools | devTools, docker, desktopApps, iosDeveloper, windowsRemoteDesktop, mediaTools, monitoring, utilities, productivity, workSpecific, spotify |
+| **personal** | Personal projects and hobby coding on separate machine | ✅ Powerlevel10k + fastfetch | ✅ Similar to work but without work-specific tools | devTools, docker, desktopApps, iosDeveloper, windowsRemoteDesktop, mediaTools, utilities, productivity, personalTools, spotify |
+| **server** | SSH access, remote machines, minimal setup | ❌ No theme | ❌ No GUI apps | docker (default off), monitoring |
 | **light** | One-off, temporary, or minimal setup | ❌ No theme | ❌ No GUI apps | None - barebones only |
 
 ### Feature Selection
@@ -112,9 +115,12 @@ Select features to install (use space to select, enter to confirm):
 | **docker** | ✅ default | ✅ default | ❌ | ❌ |
 | **spotify** | ✅ default | ✅ default | ❌ | ❌ |
 | **productivity** | ✅ default | ✅ default | ❌ | ❌ |
+| **desktopApps** | ✅ default | ✅ default | ❌ | ❌ |
 | **mediaTools** | ❌ opt-in | ❌ opt-in | ❌ | ❌ |
 | **utilities** | ❌ opt-in | ❌ opt-in | ❌ | ❌ |
 | **monitoring** | ❌ opt-in | ❌ | ✅ default | ❌ |
+| **iosDeveloper** | ❌ opt-in | ❌ opt-in | ❌ | ❌ |
+| **windowsRemoteDesktop** | ❌ opt-in | ❌ opt-in | ❌ | ❌ |
 | **workSpecific** | ❌ opt-in | ❌ | ❌ | ❌ |
 | **personalTools** | ❌ | ❌ opt-in | ❌ | ❌ |
 
@@ -172,6 +178,7 @@ Two-stage installation process:
 - Installs universal packages: bash, git, chezmoi, gh, curl, vim, tree, watch, htop, jq
 - `fzf` — fuzzy finder for project switching
 - `just` — task runner for per-repo workflows
+- `mas` — Mac App Store CLI for managing App Store apps
 
 **2. Profile + Toggle-Based Installs** (all after universal)
 
@@ -182,12 +189,15 @@ Each script checks its toggle flag before installing:
 | **devtools** | VS Code, iTerm2, Warp, NVM, Jenv, Mise, Minikube, Asciinema | `{{ .devTools }}` |
 | **docker** | Docker Desktop | `{{ .docker }}` |
 | **theme** | Powerlevel10k, fastfetch | GUI profiles (work/personal) |
+| **desktop-apps** | Amphetamine, Magnet, WireGuard | `{{ .desktopApps }}` |
 | **spotify** | Spotify | `{{ .spotify }}` |
 | **productivity** | Logseq, Typora, Drawio, Raindropio | `{{ .productivity }}` |
 | **mediatools** | OBS, Kap | `{{ .mediaTools }}` |
-| **monitoring** | Speedtest-cli, Nmap, Iperf3, Ipcalc | `{{ .monitoring }}` |
+| **monitoring** | Speedtest (Ookla), Nmap, Iperf3, Ipcalc | `{{ .monitoring }}` |
+| **ios-developer** | Xcode, TestFlight, Developer | `{{ .iosDeveloper }}` |
+| **windows-app** | Windows App (remote desktop) | `{{ .windowsRemoteDesktop }}` |
 | **work-specific** | Acli, Jira CLI, Qflipper | `{{ .workSpecific }}` (work only) |
-| **utilities** | Appcleaner, Betterdisplay, Daisydisk, Mas | `{{ .utilities }}` |
+| **utilities** | Appcleaner, Betterdisplay, Daisydisk | `{{ .utilities }}` |
 | **personal-tools** | Calibre | `{{ .personalTools }}` (personal only) |
 
 **Note**: Some packages are manually installed (1password, Arc, Logitech G Hub).
@@ -392,6 +402,15 @@ Mise shims take precedence over nvm/pyenv when active, so old and new projects c
 ### Future Enhancement: 1Password Integration
 
 Credentials (API keys, database passwords, tokens) will be stored in 1Password vault, not in `.env` files. Chezmoi templates will pull credentials during setup or runtime, eliminating plaintext secrets in git or local files.
+
+## Per-Client Git Identities
+
+For each client with a separate account, copy `assets/gitconfig-client.template` to `~/.gitconfig-{client-name}`, edit with the client email, then add an `includeIf` block to `~/.gitconfig`:
+
+```ini
+[includeIf "gitdir:~/code/{client-name}/"]
+    path = ~/.gitconfig-{client-name}
+```
 
 ## Git Workflow
 This repository follows standard git practices:
