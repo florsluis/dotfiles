@@ -1,3 +1,10 @@
+{{- if or (eq .profile "work") (eq .profile "personal") -}}
+# Enable Powerlevel10k instant prompt
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+{{ end -}}
 # Universal Configuration (all profiles)
 export PATH="/opt/homebrew/bin:$PATH"
 
@@ -29,11 +36,6 @@ bindkey "^[[1;3C" forward-word    # Option + →
 
 # GUI System Configuration (work and personal profiles)
 
-# Enable Powerlevel10k instant prompt
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Powerlevel10k theme
 [ -f /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme ] && source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -43,10 +45,21 @@ fi
 # Dev Tools Configuration
 export PATH="/opt/homebrew/opt/curl/bin:$PATH"
 
-# NVM (Node version manager)
+# NVM (Node version manager) — lazy loaded
 export NVM_DIR="$HOME/.nvm"
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+
+_load_nvm() {
+  unfunction nvm node npm npx 2>/dev/null
+
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && source "/opt/homebrew/opt/nvm/nvm.sh"
+
+  "$@"
+}
+
+nvm()  { _load_nvm nvm "$@" }
+node() { _load_nvm node "$@" }
+npm()  { _load_nvm npm "$@" }
+npx()  { _load_nvm npx "$@" }
 
 # Pyenv (Python version manager)
 export PYENV_ROOT="$HOME/.pyenv"
@@ -63,7 +76,7 @@ command -v pyenv >/dev/null 2>&1 && eval "$(pyenv init -)"
   export PATH=$PATH:$ANDROID_HOME/platform-tools
 
 # Azure CLI completion
-autoload bashcompinit && bashcompinit
+autoload -Uz compinit bashcompinit && compinit && bashcompinit
 [ -f /opt/homebrew/etc/bash_completion.d/az ] && source /opt/homebrew/etc/bash_completion.d/az
 
 # jenv (Java version manager)
@@ -76,19 +89,33 @@ command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 
 {{- if or (eq .profile "work") (eq .profile "personal") }}
 
-# Conda initialization (GUI systems only)
-__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)" || __conda_setup="$('/opt/miniconda/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
+# Conda — lazy loaded
+conda() {
+  unfunction conda
+
+  local conda_bin
+  if [[ -x /opt/miniconda3/bin/conda ]]; then
+    conda_bin=/opt/miniconda3/bin/conda
+  elif [[ -x /opt/miniconda/bin/conda ]]; then
+    conda_bin=/opt/miniconda/bin/conda
+  else
+    echo "conda not found"
+    return 127
+  fi
+
+  local __conda_setup
+  __conda_setup="$("$conda_bin" shell.zsh hook 2>/dev/null)"
+
+  if [[ $? -eq 0 ]]; then
     eval "$__conda_setup"
-else
-    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/opt/miniconda3/etc/profile.d/conda.sh"
-    elif [ -f "/opt/miniconda/etc/profile.d/conda.sh" ]; then
-        . "/opt/miniconda/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/miniconda3/bin:/opt/miniconda/bin:$PATH"
-    fi
-fi
+  else
+    echo "Failed to initialize conda"
+    return 1
+  fi
+
+  unset __conda_setup
+  conda "$@"
+}
 
 {{- end }}
 
@@ -128,7 +155,7 @@ alias review="review_pull_request"
 
 # Productivity Tools (Slack, Outlook, Logseq, Arc)
 alias slack="open -a Slack"
-alias logseq="open -a Logseq"
+#alias logseq="open -a Logseq"
 alias arc="open -a Arc"
 alias outlook="open -a 'Microsoft Outlook'"
 alias teams="open -a 'Microsoft Teams'"
@@ -139,6 +166,34 @@ headstorm() {
 	open -a Logseq
 	open -a Slack
 }
+
+mp4demo () {
+  ffmpeg -i "$1" \
+  -vf "fps=10,scale=1000:-2" \
+  -c:v libx264 -crf 30 -preset slow \
+  -movflags +faststart \
+  "${1%.*}.mp4"
+}
+
+{{- end }}
+
+{{- if has "devTools" .features }}
+
+EAS_AC_ZSH_SETUP_PATH=$HOME/Library/Caches/eas-cli/autocomplete/zsh_setup && test -f $EAS_AC_ZSH_SETUP_PATH && source $EAS_AC_ZSH_SETUP_PATH; # eas autocomplete setup
+
+if command -v tmux >/dev/null 2>&1 && [ -z "$TMUX" ]; then
+  tmux start-server
+  bash ~/.tmux/bootstrap.sh
+fi
+
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="$HOME/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+
+# opencode
+export PATH=$HOME/.opencode/bin:$PATH
 
 {{- end }}
 
