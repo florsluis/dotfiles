@@ -8,7 +8,8 @@ fi
 # Universal Configuration (all profiles)
 export PATH="/opt/homebrew/bin:$PATH"
 
-# Load local secrets and environment variables (not tracked by chezmoi)
+# Untracked secrets and client named dirs. For a new client, add to ~/.env.local:
+# hash -d <client>=~/codebase/<client>, then one per repo or worktree dir off ~<client>
 [ -f ~/.env.local ] && source ~/.env.local
 
 # Chezmoi Configuration
